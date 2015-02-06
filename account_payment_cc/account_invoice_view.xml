@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+
+<!-- Form view, show CC payment option and add onchange -->
+<record id="invoice_form_cc_method" model="ir.ui.view">
+	<field name="name">account.invoice.form.cc.method</field>
+	<field name="model">account.invoice</field>
+	<field name="inherit_id" ref="account.invoice_form"/>
+	<field name="arch" type="xml">
+		<xpath expr="//field[@name='date_due']" position="after">
+			<field name="is_cc_payment" attrs="{'invisible': [('type','not in',['out_invoice', 'out_refund'])], 'readonly': [('state','not in',['draft'])]}"/>
+		</xpath>
+		<xpath expr="//field[@name='payment_term']" position="attributes">
+			<attribute name="on_change">onchange_payment_term_cc(payment_term)</attribute>
+		</xpath>
+	</field>
+</record>
+
+<!-- List view, prep for search filtering -->
+<record id="invoice_tree_cc_method" model="ir.ui.view">
+	<field name="name">account.invoice.tree.cc.method</field>
+	<field name="model">account.invoice</field>
+	<field name="inherit_id" ref="account.invoice_tree"/>
+	<field name="arch" type="xml">
+		<xpath expr="//field[@name='name']" position="after">
+			<field name="is_cc_payment" invisible="1"/>
+		</xpath>
+	</field>
+</record>
+
+<!-- Search view -->
+<record id="view_account_invoice_filter" model="ir.ui.view">
+	<field name="name">account.invoice.select.cc.method</field>
+	<field name="model">account.invoice</field>
+	<field name="inherit_id" ref="account.view_account_invoice_filter"/>
+	<field name="arch" type="xml">
+		<xpath expr="//separator" position="after">
+			<filter name="is_cc" string="CC Payments" domain="[('is_cc_payment','=',True)]" help="Only invoices that are using Credit Card payment processing."/>
+			<separator/>
+		</xpath>
+	</field>
+</record>
+
+
+</data>
+</openerp>

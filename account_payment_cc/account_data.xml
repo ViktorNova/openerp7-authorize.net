@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data noupdate="1">
+
+<!--
+	Terms
+-->
+<!-- Create base payment term for CC -->
+<record id="cc_payment_term_default" model="account.payment.term">
+	<field name="name">Credit Card</field>
+	<field name="active">True</field>
+	<field name="is_cc_term">True</field>
+</record>
+
+<!-- CC Payment Term line (must go after the term) -->
+<record id="cc_payment_term_default_line" model="account.payment.term.line">
+	<field name="value">balance</field>
+	<field name="days">0</field>
+	<field name="days2">0</field>
+	<field name="payment_id" ref="cc_payment_term_default"/>
+</record>
+
+
+<!--
+	Journals
+-->
+<!-- CC Journal sequence -->
+<record id="cc_journal_seq" model="ir.sequence">
+	<field name="name">CC</field>
+	<field name="active">True</field>
+	<field name="padding">4</field>
+	<field name="number_next_actual">1</field>
+	<field name="number_increment">1</field>
+	<field name="implementation">no_gap</field>
+	<field name="prefix">CC/%(year)s/</field>
+</record>
+
+<!-- Initialize CC journal (default debit/credit accounts must be assigned manually!) -->
+<record id="cc_journal" model="account.journal">
+	<field name="name">CC Journal</field>
+	<field name="type">bank</field>
+	<field name="code">CC</field>
+	<field name="user_id">1</field>
+	<field name="sequence_id" ref="cc_journal_seq"/>
+	<field name="cc_processing">True</field>
+	<field name="cc_refunds">True</field>
+	<field name="entry_posted">True</field>
+</record>
+
+
+<!--
+	Bank Types (cc type)
+-->
+<record id="bank_cc" model="res.partner.bank.type">
+	<field name="name">Credit Card</field>
+	<field name="code">cc</field>
+	<field name="format_layout">CC: %(last_four)s</field>
+</record>
+
+</data>
+</openerp>

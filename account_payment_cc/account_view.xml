@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+<!-- Payment Term Details -->
+<record id="view_payment_term_form_cc" model="ir.ui.view">
+	<field name="name">account.payment.term.cc</field>
+	<field name="model">account.payment.term</field>
+	<field name="priority">17</field>	<!-- Higher priority to go after other payment term modules -->
+	<field name="inherit_id" ref="account.view_payment_term_form"/>
+	<field name="arch" type="xml">
+		<xpath expr="//field[@name='active']" position="after">
+			<field name="is_cc_term"/>
+		</xpath>
+	</field>
+</record>
+
+
+<!-- Placeholder menu for CC API credentials -->
+<menuitem id="cc_api_menu" parent="account.menu_finance_configuration" string="CC API Settings"
+	sequence="50" groups="account.group_account_manager"/>
+
+</data>
+</openerp>

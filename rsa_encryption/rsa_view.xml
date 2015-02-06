@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+<record id="view_rsa_key_tree" model="ir.ui.view">
+	<field name="name">rsa.encryption.tree</field>
+	<field name="model">rsa.encryption</field>
+	<field name="arch" type="xml">
+		<tree string="RSA Key Sets">
+			<field name="name"/>
+			<field name="active"/>
+			<field name="primary"/>
+		</tree>
+	</field>
+</record>
+
+<record id="action_rsa_key" model="ir.actions.act_window">
+	<field name="name">RSA Keys</field>
+	<field name="type">ir.actions.act_window</field>
+	<field name="res_model">rsa.encryption</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+</record>
+
+<menuitem id="rsa_menu" parent="base.menu_security" sequence="15" string="RSA Keys" action="action_rsa_key"
+	groups="base.group_erp_manager"/>
+<menuitem id="rsa_generate_menu" parent="base.menu_security" sequence="16" string="Generate New Keys"
+	action="action_key_generator" groups="base.group_erp_manager"/>
+
+</data>
+</openerp>

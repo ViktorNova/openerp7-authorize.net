@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+<!-- VOUCHER view -->
+<record id="view_vendor_receipt_form_cc_authnet" model="ir.ui.view">
+	<field name="name">account.voucher.receipt.form.cc.authnet</field>
+	<field name="model">account.voucher</field>
+	<field name="inherit_id" ref="account_voucher.view_vendor_receipt_form"/>
+	<field name="arch" type="xml">
+		<xpath expr="//field[@name='journal_id']" position="after">
+			<field name="cim_id" invisible="1"/>
+			<field name="cim_payment_id" attrs="{'invisible':[('cim_id','=',False)]}"/>
+			<label string="'Card on File' will override any CC info entered below." colspan="4"
+				attrs="{'invisible':[('cim_id','=',False)]}"/>
+		</xpath>
+	</field>
+</record>
+
+<!-- POPUP view -->
+<record id="view_vendor_receipt_dialog_form_cc_authnet" model="ir.ui.view">
+	<field name="name">account.voucher.receipt.dialog.form.cc.authnet</field>
+	<field name="model">account.voucher</field>
+	<field name="inherit_id" ref="account_voucher.view_vendor_receipt_dialog_form"/>
+	<field name="arch" type="xml">
+		<xpath expr="//field[@name='journal_id']" position="after">
+			<field name="cim_id" invisible="1"/>
+			<field name="cim_payment_id" attrs="{'invisible':[('cim_id','=',False)]}"/>
+			<label string="'Card on File' will override any CC info entered below." colspan="4"
+				attrs="{'invisible':[('cim_id','=',False)]}"/>
+		</xpath>
+	</field>
+</record>
+
+</data>
+</openerp>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+<record id="view_vendor_receipt_form_authnet" model="ir.ui.view">
+	<field name="name">account.voucher.receipt.form</field>
+	<field name="model">account.voucher</field>
+	<field name="inherit_id" ref="account_voucher.view_vendor_receipt_form"/>
+	<field name="arch" type="xml">
+		<!-- Change from a workflow button to a functional button -->
+		<xpath expr="//button[@name='proforma_voucher']" position="replace">
+			<button name="proforma_voucher" string="Validate" type="object" states="draft,dispute" class="oe_highlight"/>
+		</xpath>
+		<xpath expr="//button[@string='Cancel Receipt']" position="replace">
+			<button name="cancel_voucher" string="Cancel Receipt" states="draft,proforma,dispute"/>
+		</xpath>
+		<xpath expr="//button[@string='Unreconcile']" position="replace">
+			<button name="cancel_voucher" string="Unreconcile" type="object"
+				confirm="Are you sure to unreconcile and cancel this record?"
+				attrs="{'invisible':['|',('use_cc','=',True),('state','!=','posted')]}"/>
+			<button name="void_voucher" string="Void" type="object"
+				confirm="Are you sure to void this credit card transaction?"
+				attrs="{'invisible':['|',('use_cc','=',False),('state','!=','posted')]}"/>
+		</xpath>
+		
+		<!-- List CC error info when needed -->
+		<xpath expr="//field[@name='number']" position="after">
+			<field name="error_text" states="dispute"/>
+		</xpath>
+		<xpath expr="//field[@name='name']" position="after">
+			<field name="transId" attrs="{'invisible':[('transId','=',False)]}"/>
+		</xpath>
+	</field>
+</record>
+
+
+<!-- CC API Credential views -->
+<record id="form_authorize_cred" model="ir.ui.view">
+	<field name="name">account.authnet.form</field>
+	<field name="model">account.authnet</field>
+	<field name="arch" type="xml">
+		<form string="API Credentials" version="7.0">
+			<sheet>
+				<label for="name" class="oe_edit_only"/>
+				<h1><field name="name"/></h1>
+				<group>
+					<group>
+						<field name="gateway_id"/>
+						<field name="login"/>
+						<field name="key"/>
+					</group>
+					<group>
+						<field name="active"/>
+						<field name="test"/>
+						<field name="url"/>
+					</group>
+				</group>
+			</sheet>
+		</form>
+	</field>
+</record>
+
+<record id="tree_authorize_cred" model="ir.ui.view">
+	<field name="name">account.authnet.tree</field>
+	<field name="model">account.authnet</field>
+	<field name="arch" type="xml">
+		<tree string="API Credentials">
+			<field name="name"/>
+			<field name="active"/>
+			<field name="test"/>
+		</tree>
+	</field>
+</record>
+
+
+<!-- Action for CC API login -->
+<record id="action_authorize_cred" model="ir.actions.act_window">
+	<field name="name">CC API Credentials</field>
+	<field name="res_model">account.authnet</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+</record>
+
+<!-- Add action to core menuitem -->
+<menuitem id="account_payment_cc.cc_api_menu" parent="account.menu_finance_configuration" action="action_authorize_cred"
+	string="CC API Settings" sequence="50" groups="account.group_account_manager"/>
+
+</data>
+</openerp>

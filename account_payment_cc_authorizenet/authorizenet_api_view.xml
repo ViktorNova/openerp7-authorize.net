@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+<record id="customer_profile_form" model="ir.ui.view">
+	<field name="name">account.authnet.cim.form</field>
+	<field name="model">account.authnet.cim</field>
+	<field name="arch" type="xml">
+		<form string="Customer Profile" version="7.0">
+			<sheet>
+				<div class="oe_title">
+					<h2><field name="name"/></h2>
+				</div>
+				<group>
+					<group>
+						<field name="partner_id"/>
+						<field name="invoice_addr_id"/>
+					</group>
+					<group>
+						<field name="profile_id"/>
+						<field name="default_payprofile_id"/>
+					</group>
+				</group>
+				<button type="object" name="create_payment_profile" string="Register Payment Profile"/>
+				<div>
+					<field name="payprofile_ids">
+						<tree>
+							<field name="last_four"/>
+							<field name="name"/>
+						</tree>
+					</field>
+				</div>
+			</sheet>
+		</form>
+	</field>
+</record>
+
+
+<record id="customer_payment_profile_form" model="ir.ui.view">
+	<field name="name">account.authnet.cim.payprofile.form</field>
+	<field name="model">account.authnet.cim.payprofile</field>
+	<field name="arch" type="xml">
+		<form string="Payment Profile" version="7.0">
+			<sheet>
+				<div class="oe_title">
+					<h2><field name="name"/></h2>
+				</div>
+				<group>
+					<group>
+						<field name="cim_id"/>
+						<field name="alt_invoice_addr_id"/>
+					</group>
+					<group>
+						<field name="last_four"/>
+						<field name="payprofile_id"/>
+					</group>
+					<group>
+						<button name="cim_unlink" type="object" string="Delete Record" confirm="Really delete this payment profile?"/>
+					</group>
+				</group>
+			</sheet>
+		</form>
+	</field>
+</record>
+
+</data>
+</openerp>

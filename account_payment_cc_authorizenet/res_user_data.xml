@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2014 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2014 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+<record id="group_profile_entry" model="res.groups">
+	<field name="name">Payment Profile Entry</field>
+	<field name="category_id" ref="base.module_category_hidden"/>
+</record>
+
+<!-- Accountants by default have access to payment profile entry -->
+<record id="account.group_account_user" model="res.groups">
+	<field name="implied_ids" eval="[(4, ref('group_profile_entry'))]"/>
+</record>
+
+</data>
+</openerp>

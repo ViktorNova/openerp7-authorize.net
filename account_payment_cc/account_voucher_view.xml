@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+<!-- VOUCHER view -->
+<record id="view_vendor_receipt_form_cc" model="ir.ui.view">
+	<field name="name">account.voucher.receipt.form.cc</field>
+	<field name="model">account.voucher</field>
+	<field name="inherit_id" ref="account_voucher.view_vendor_receipt_form"/>
+	<field name="arch" type="xml">
+		<xpath expr="//field[@name='partner_id']" position="after">
+			<field name="invoice_addr_id" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]"/>
+		</xpath>
+		
+		<!--
+			This xpath expression solves a problem of looking for a specific but nondescript
+			or identical tag.  Specifically I'm looking for the SECOND instance of a group tag
+			nested inside a group tag.  Without the [2], you'll always get the first tag, which
+			isn't right - it will push the content on the right down.  Using position="inside" on
+			the first group tag only works if you know there are only two group tags inside, since
+			that will insert at the end of the inside of the tag.
+			
+			<form>
+			  <group>
+			    <group></group>
+			    <group></group>
+			    - Insert here -
+			    <group></group>
+			    <group></group>
+			  </group>
+			  <notebook></notebook>
+			</form>
+		-->
+		<xpath expr="(//group/group)[2]" position="after">
+			<group>
+				<label for="cc_number" string="CC Info"
+					attrs="{'invisible': ['|',('use_cc','=',False),('last_four','!=',False)]}"/>
+				<div>
+					<field name="cc_number" placeholder="Card number..."
+						attrs="{'invisible': ['|',('use_cc','=',False),('last_four','!=',False)]}"/>
+					<div>
+						<field name="cc_cvv" style="width: 30%%" placeholder="CVV"
+							attrs="{'invisible': ['|',('use_cc','=',False),('last_four','!=',False)]}"/>
+						<field name="cc_exp_month" style="width: 20%%" placeholder="MM"
+							attrs="{'invisible': ['|',('use_cc','=',False),('last_four','!=',False)]}"/>
+						<label string="/"
+							attrs="{'invisible': ['|',('use_cc','=',False),('last_four','!=',False)]}"/>
+						<field name="cc_exp_year" style="width: 20%%" placeholder="YY"
+							attrs="{'invisible': ['|',('use_cc','=',False),('last_four','!=',False)]}"/>
+					</div>
+				</div>
+			</group>
+			<group></group>
+			<group>
+				<!-- Don't show last four digits until they're set (read-only anyway) -->
+				<field name="last_four" attrs="{'invisible':[('last_four','=',False)]}"/>
+			</group>
+		</xpath>
+		
+		<!-- Add the hidden cc_use field to show/hide CC fields -->
+		<xpath expr="//field[@name='type']" position="after">
+			<field name="use_cc" invisible="1"/>
+		</xpath>
+	</field>
+</record>
+
+
+<!-- POPUP view (from invoice itself) -->
+<record model="ir.ui.view" id="view_vendor_receipt_dialog_form_cc">
+	<field name="name">account.voucher.receipt.dialog.form.cc</field>
+	<field name="model">account.voucher</field>
+	<field name="inherit_id" ref="account_voucher.view_vendor_receipt_dialog_form"/>
+	<field name="arch" type="xml">
+		<xpath expr="//field[@name='partner_id']" position="after">
+			<field name="invoice_addr_id" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]"/>
+		</xpath>
+		<!-- Put the CC info after the **first** group tag -->
+		<xpath expr="/form/group" position="after">
+			<group>
+				<group>
+					<label for="cc_number" string="CC Info" attrs="{'invisible': [('use_cc','=',False)]}"/>
+					<div>
+						<field name="cc_number" placeholder="Card number..."
+							attrs="{'invisible': [('use_cc','=',False)]}"/>
+						<div>
+							<field name="cc_cvv" style="width: 30%%" placeholder="CVV"
+								attrs="{'invisible': [('use_cc','=',False)]}"/>
+							<field name="cc_exp_month" style="width: 20%%" placeholder="MM"
+								attrs="{'invisible': [('use_cc','=',False)]}"/>
+							<label string="/" attrs="{'invisible': [('use_cc','=',False)]}"/>
+							<field name="cc_exp_year" style="width: 20%%" placeholder="YY"
+								attrs="{'invisible': [('use_cc','=',False)]}"/>
+						</div>
+					</div>
+				</group>
+				<group></group>
+			</group>
+		</xpath>
+		
+		<!-- Add the hidden cc_use field to show/hide CC fields -->
+		<xpath expr="//field[@name='type']" position="after">
+			<field name="use_cc" invisible="1"/>
+		</xpath>
+	</field>
+</record>
+
+</data>
+</openerp>

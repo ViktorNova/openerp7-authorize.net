@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+##############################################################################
+#
+#	OpenERP, Open Source Management Solution
+#	Copyright (C) 2013 Solaris, Inc. (<http://www.solarismed.com>)
+#	Copyright (C) 2004-2013 OpenERP SA (<http://www.openerp.com>)
+#
+#	This program is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+##############################################################################
+-->
+
+<openerp>
+<data>
+
+<record id="view_partner_property_form_cim" model="ir.ui.view">
+	<field name="name">res.partner.form.cim</field>
+	<field name="model">res.partner</field>
+	<field name="inherit_id" ref="account.view_partner_property_form"/>
+	<field name="arch" type="xml">
+		<xpath expr="//field[@name='bank_ids']" position="before">
+			<group string="Credit Card Processing Info">
+				<group>
+					<field name="cim_id" readonly="1" attrs="{'invisible':[('cim_id','=',False)]}"/>
+				</group>
+				<group></group>
+				<group>
+					<button type="object" name="create_customer_profile" string="Create Customer Profile" attrs="{'invisible':[('cim_id','!=',False)]}" />
+					<button type="object" name="create_payment_profile" string="Register Payment Profile" attrs="{'invisible':[('cim_id','=',False)]}" />
+				</group>
+				<group></group>
+			</group>
+		</xpath>
+	</field>
+</record>
+
+</data>
+</openerp>
