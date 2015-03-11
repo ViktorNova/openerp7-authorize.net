@@ -20,7 +20,9 @@ This is used to encrypt the credit card information stored on your server
 
 ###Add auth.net credentials 
 **Accounting > CC API Credentials**
-You should use an authorize.net sandbox account to start out with, and then switch over to the real one once you're sure everything is properly configured. 
+You will need your Authorize.net credentials. You should use an authorize.net sandbox account to start out with, and then switch over to the real one once you're sure everything is properly configured. 
+
+You'll need your Gateway ID (account number?), and you'll need to generate an API ID and transaction key your Auth.net sandbox account, which you enter into this section in OpenERP
 
 ###Set default income account for credit card transactions
 I can't remember where to do this
