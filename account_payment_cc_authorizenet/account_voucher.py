@@ -78,20 +78,13 @@ class account_voucher(osv.osv):
 		cust_info = {}
 		cc_read_fields = ['cc_number', 'cc_cvv', 'cc_exp_month', 'cc_exp_year']
 		
-		for cr_line in voucher_rec.line_cr_ids:
-			if ref_orders:
-				ref_orders += ',' + cr_line.move_line_id.move_id.ref
-			else:
-				ref_orders = cr_line.move_line_id.move_id.ref
+		# Get Invoice No
+		invoice_pool = self.pool.get('account.invoice')
+		if context.get('invoice_id', False):
+         	 ref_orders = invoice_pool.browse(cr, uid, context['invoice_id'], context=context)
+         	 ref_credit_memos = ref_orders.number
 		
-		for dr_line in voucher_rec.line_dr_ids:
-			if ref_credit_memos:
-				ref_credit_memos += ',' + dr_line.move_line_id.move_id.ref
-			else:
-				ref_credit_memos = dr_line.move_line_id.move_id.ref
-		
-		
-		# ------------------------
+ 		# ------------------------
 		# Begin the XML generation
 		# ------------------------
 		# Format will vary based on if it's a card on file or one-time use local card
@@ -148,6 +141,21 @@ class account_voucher(osv.osv):
 			# Prep info dictionary for the XML tree
 			cc_info = self.read(cr, uid, [voucher_rec.id], cc_read_fields, ctx)[0]
 			
+			cc_error_msg=''
+			if not cc_info['cc_number']:
+				cc_error_msg +='Card Number \n'
+			if not cc_info['cc_cvv']:
+				cc_error_msg +='CVV Number \n'
+			if not cc_info['cc_exp_month']:
+				cc_error_msg +='Expiration Month \n'
+			if not cc_info['cc_exp_year']:
+				cc_error_msg +='Expiration Year \n'
+				
+			if cc_error_msg:
+				cc_error_msg='Card info missing \n\n%s' % (cc_error_msg)
+				raise osv.except_osv("Error", cc_error_msg)
+				
+				
 			pay_type = etree.SubElement(transaction_req, 'payment')
 			cc = etree.SubElement(pay_type, 'creditCard')
 			etree.SubElement(cc, 'cardNumber').text = cc_info['cc_number']
@@ -158,7 +166,7 @@ class account_voucher(osv.osv):
 			
 			# Reference info
 			order_ref = etree.SubElement(transaction_req, 'order')
-			etree.SubElement(order_ref, 'invoiceNumber').text = ref_orders
+			etree.SubElement(order_ref, 'invoiceNumber').text = ref_orders.number
 			if ref_credit_memos:
 				etree.SubElement(order_ref, 'description').text = 'Credit memo(s) applied from: ' + ref_credit_memos
 			
@@ -190,15 +198,21 @@ class account_voucher(osv.osv):
 	
 	# Override the original proforma_voucher method and insert Authorize.net validation code
 	def proforma_voucher(self, cr, uid, ids, context=None):
+		
 		if context is None: context = {}
 		voucher_recs = self.browse(cr, uid, ids)
 		valid_ids = []
 		wf_service = netsvc.LocalService("workflow")
-		
+	
+
+	
 		for voucher_rec in voucher_recs:
 			# Make sure there's an amount, $0 payments are worthless!
+			#raise osv.except_osv("Error", voucher_rec.journal_id.company_id.id)
 			if not voucher_rec.amount:
 				raise osv.except_osv("Error", "Paid Amount is $0, please enter a payment amount.")
+			
+			
 			
 			# If this is a CC payment, authenticate with Authorize.net
 			if voucher_rec.use_cc:
@@ -240,27 +254,26 @@ class account_voucher(osv.osv):
 						'last_four': last_four,
 					}
 					self.write(cr, uid, [voucher_rec.id], vals, context)
-					
+					self.action_move_line_create(cr, uid, ids, context=context)
 					# The transaction is approved, schedule the move lines to be created
-					valid_ids.append(voucher_rec.id)
+					#valid_ids.append(voucher_rec.id)
 				else:
 					vals = {
 						'is_approved': False,
 						'error_text': errordesc,
 						'state': 'dispute',
 					}
-					self.write(cr, uid, [voucher_rec.id], vals, context)
-					wf_service.trg_validate(uid, 'account.voucher', voucher_rec.id, 'cc_dispute', cr)
+					self.write(cr, uid, ids, vals, context)
+					wf_service.trg_validate(uid, 'account.voucher', ids, 'cc_dispute', cr)
 			
 			else:
 				# If it's not a CC transaction, always add the ID to the valid id list
-				valid_ids.append(voucher_rec.id)
-		
-		# Process the valid id list
-		self.action_move_line_create(cr, uid, valid_ids, context=context)
+				#valid_ids.append(voucher_rec.id)
+				# Process the valid id list
+				self.action_move_line_create(cr, uid, ids, context=context)
 		
 		# Trigger workflows on all valid transactions
-		for vid in valid_ids:
+		for vid in ids:
 			wf_service.trg_validate(uid, 'account.voucher', vid, 'proforma_voucher', cr)
 		
 		return True
