@@ -109,8 +109,11 @@ class authorizenet_api(osv.Model):
 				raise osv.except_osv("XML Error", errormsg)
 			errorcode = res.xpath('//messages/message/code')[-1].text
 			errordesc = res.xpath('//messages/message/text')[-1].text
-			errormsg = "There was an error in the XML request.\n\nCode: %s\nDescription: %s\n\nFull Response: \n\n%s" % (errorcode, errordesc, etree.tostring(res, pretty_print=True))
-			raise osv.except_osv("XML Error", errormsg)
+			Acterrordesc = res.xpath('//transactionResponse/errors/error/errorText')[-1].text
+			#errormsg = "There was an error in the XML request.\n\nCode: %s\nDescription: %s\n\nFull Response: \n\n%s" % (errorcode, errordesc, etree.tostring(res, pretty_print=True))
+			#raise osv.except_osv("XML Error", errormsg)
+			errormsg = Acterrordesc
+			raise osv.except_osv("Author.Net Transaction Response", errormsg)
 		
 		# Looks valid, so return the XML text for function-specific parsing
 		return res
