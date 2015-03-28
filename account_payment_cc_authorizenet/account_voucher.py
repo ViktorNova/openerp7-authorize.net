@@ -141,6 +141,15 @@ class account_voucher(osv.osv):
 			# Prep info dictionary for the XML tree
 			cc_info = self.read(cr, uid, [voucher_rec.id], cc_read_fields, ctx)[0]
 			
+			#raise osv.except_osv("Error", len(cc_info['cc_number']))
+			if len(cc_info['cc_number']) < 13 or len(cc_info['cc_number']) > 16:
+				showCardNumErr = "Invalid Card number length. " + str(len(cc_info['cc_number']))
+				raise osv.except_osv("Error", showCardNumErr)
+			if len(cc_info['cc_exp_month']) > 12:
+				showMonthErr = "Invalid Month. " + str(len(cc_info['cc_exp_month']))
+				raise osv.except_osv("Error", showMonthErr)
+			
+			
 			cc_error_msg=''
 			if not cc_info['cc_number']:
 				cc_error_msg +='Card Number \n'
